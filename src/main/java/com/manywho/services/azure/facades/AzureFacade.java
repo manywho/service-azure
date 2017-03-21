@@ -36,7 +36,7 @@ public class AzureFacade {
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
     public List<Object> fetchMemberOfGroups(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "/me/memberOf");
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "me/memberOf");
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
