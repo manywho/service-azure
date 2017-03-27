@@ -33,7 +33,7 @@ public class AuthenticationService {
 
         JWT jwt = JWT.decode(authResponse.getAccess_token());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
-        authenticatedWhoResult.setDirectoryId( provider.getName());
+        authenticatedWhoResult.setDirectoryId( provider.getClientId());
         authenticatedWhoResult.setDirectoryName( provider.getName());
         authenticatedWhoResult.setEmail(jwt.getClaim("unique_name").asString());
         authenticatedWhoResult.setFirstName(jwt.getClaim("given_name").asString());
