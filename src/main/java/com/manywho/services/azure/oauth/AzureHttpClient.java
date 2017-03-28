@@ -8,6 +8,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class AzureHttpClient {
     private CloseableHttpClient httpclient;
 
+    @Inject
     public AzureHttpClient(){
         this.httpclient = HttpClients.createDefault();
     }

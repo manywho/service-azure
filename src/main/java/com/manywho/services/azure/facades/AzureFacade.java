@@ -53,6 +53,12 @@ public class AzureFacade {
         return sitesEntitySetResponse.getProperty("id").getValue().toString();
     }
 
+    public String fetchCurrentUserEmail(String token) {
+        ODataEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
+
+        return sitesEntitySetResponse.getProperty("mail").getValue().toString();
+    }
+
     private List<Object> responseUsers(List<ODataEntity> entities) {
         List<Object> groupsArray = new ArrayList<>();
 
