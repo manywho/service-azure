@@ -1,6 +1,7 @@
 package com.manywho.services.azure.facades;
 
 import com.manywho.sdk.entities.run.elements.type.Object;
+import com.manywho.services.azure.entities.AzureUser;
 import com.manywho.services.azure.services.ObjectMapperService;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
@@ -53,10 +54,13 @@ public class AzureFacade {
         return sitesEntitySetResponse.getProperty("id").getValue().toString();
     }
 
-    public String fetchCurrentUserEmail(String token) {
+    public AzureUser fetchCurrentUser(String token) {
         ODataEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
 
-        return sitesEntitySetResponse.getProperty("mail").getValue().toString();
+        return new AzureUser(sitesEntitySetResponse.getProperty("mail").getValue().toString(),
+                sitesEntitySetResponse.getProperty("givenName").getValue().toString(),
+                sitesEntitySetResponse.getProperty("surname").getValue().toString(),
+                sitesEntitySetResponse.getProperty("id").getValue().toString());
     }
 
     private List<Object> responseUsers(List<ODataEntity> entities) {

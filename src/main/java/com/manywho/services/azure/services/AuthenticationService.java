@@ -6,6 +6,7 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthenticationStatus;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.azure.configuration.SecurityConfiguration;
+import com.manywho.services.azure.entities.AzureUser;
 import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.oauth.AuthResponse;
 import com.manywho.services.azure.oauth.AzureHttpClient;
@@ -36,27 +37,22 @@ public class AuthenticationService {
                 RESOURCE_ID);
 
         JWT jwt = JWT.decode(authResponse.getAccess_token());
+        AzureUser azureUser = azureFacade.fetchCurrentUser(jwt.getToken());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
         authenticatedWhoResult.setDirectoryId( provider.getClientId());
         authenticatedWhoResult.setDirectoryName( provider.getName());
-        authenticatedWhoResult.setEmail(azureFacade.fetchCurrentUserEmail(jwt.getToken()));
-        authenticatedWhoResult.setFirstName(valueOrEmpty(jwt,"given_name"));
+        authenticatedWhoResult.setEmail(azureUser.getEmail());
+        authenticatedWhoResult.setFirstName(azureUser.getGivenName());
         authenticatedWhoResult.setIdentityProvider(provider.getName());
-        authenticatedWhoResult.setLastName(valueOrEmpty(jwt,"family_name"));
+        authenticatedWhoResult.setLastName(azureUser.getFamilyName());
         authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(provider.getClientId());
         authenticatedWhoResult.setToken( jwt.getToken());
-        authenticatedWhoResult.setUserId( jwt.getClaim("oid").asString());
-        authenticatedWhoResult.setUsername(jwt.getClaim("unique_name").asString());
+        authenticatedWhoResult.setUserId( azureUser.getUserId());
+        authenticatedWhoResult.setUsername(azureUser.getEmail());
 
         return authenticatedWhoResult;
     }
 
-    private String valueOrEmpty(JWT jwt, String value) {
-        if(StringUtils.isEmpty(jwt.getClaim(value).asString())) {
-            return "empty";
-        } else {
-            return jwt.getClaim(value).asString();
-        }
-    }
+
 }
