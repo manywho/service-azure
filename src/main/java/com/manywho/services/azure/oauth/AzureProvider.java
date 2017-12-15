@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 public class AzureProvider extends AbstractOauth2Provider {
     private final SecurityConfiguration configuration;
-    public static final String REDIRECT_URI = "http://flow.manywho.com/api/run/1/oauth2";
+    public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
     public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
 
     @Inject
