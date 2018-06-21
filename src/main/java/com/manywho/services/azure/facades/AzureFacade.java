@@ -60,7 +60,9 @@ public class AzureFacade {
         return new AzureUser(sitesEntitySetResponse.getProperty("mail").getValue().toString(),
                 sitesEntitySetResponse.getProperty("givenName").getValue().toString(),
                 sitesEntitySetResponse.getProperty("surname").getValue().toString(),
-                sitesEntitySetResponse.getProperty("id").getValue().toString());
+                sitesEntitySetResponse.getProperty("id").getValue().toString(),
+                sitesEntitySetResponse.getProperty("userPrincipalName").getValue().toString()
+        );
     }
 
     private List<Object> responseUsers(List<ODataEntity> entities) {

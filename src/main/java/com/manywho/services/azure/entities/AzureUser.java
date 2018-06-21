@@ -1,5 +1,7 @@
 package com.manywho.services.azure.entities;
 
+import com.google.common.base.Strings;
+
 public class AzureUser {
     public String email;
     public String givenName;
@@ -7,19 +9,23 @@ public class AzureUser {
     public String userId;
     public String uniqueName;
 
-    public AzureUser(String email, String givenName, String familyName, String userId) {
+    public AzureUser(String email, String givenName, String familyName, String userId, String userPrincipalName) {
         this.email = email;
         this.givenName = givenName;
         this.familyName = familyName;
         this.userId = userId;
-        this.uniqueName = null;
+        this.uniqueName = userPrincipalName;
 
-        if (this.familyName == null) {
+        if (Strings.isNullOrEmpty(this.familyName)) {
             this.familyName = "empty";
         }
 
-        if (this.givenName == null) {
+        if (Strings.isNullOrEmpty(this.givenName)) {
             this.givenName = "empty";
+        }
+
+        if (Strings.isNullOrEmpty(this.uniqueName)) {
+            this.uniqueName = userId;
         }
     }
 

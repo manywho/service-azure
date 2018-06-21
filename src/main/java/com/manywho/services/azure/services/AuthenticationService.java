@@ -28,7 +28,7 @@ public class AuthenticationService {
         this.azureFacade = azureFacade;
     }
 
-    public AuthenticatedWhoResult getAuthenticatedWhoResult(AbstractOauth2Provider provider, AuthenticationCredentials credentials) throws Exception {
+    public AuthenticatedWhoResult getAuthenticatedWhoResult(AbstractOauth2Provider provider, AuthenticationCredentials credentials) {
         AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
                 credentials.getCode(),
                 AzureProvider.REDIRECT_URI,
@@ -49,7 +49,7 @@ public class AuthenticationService {
         authenticatedWhoResult.setTenantName(provider.getClientId());
         authenticatedWhoResult.setToken( jwt.getToken());
         authenticatedWhoResult.setUserId( azureUser.getUserId());
-        authenticatedWhoResult.setUsername(azureUser.getEmail());
+        authenticatedWhoResult.setUsername(azureUser.getUniqueName());
 
         return authenticatedWhoResult;
     }

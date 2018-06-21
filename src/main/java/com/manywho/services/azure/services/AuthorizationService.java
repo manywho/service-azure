@@ -98,10 +98,10 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        List<Object> groups = azureFacade.fetchUsers(accessToken.getAccess_token());
+        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token());
         ObjectCollection objectCollection = new ObjectCollection();
 
-        for (Object o: groups) {
+        for (Object o: users) {
             objectCollection.add(o);
         }
 
