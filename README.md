@@ -3,14 +3,14 @@ ManyWho Azure Service
 
 This service allows you to integrate your Flows with Azure Id Provider
 
-before running the app for first time the admin need to consent permissions executing this url in the browser:
+Before running the app for first time the admin need to consent permissions executing this url in the browser:
 
-https://login.microsoftonline.com/common/oauth2/authorize?client_id=332de6ad-b5a7-4102-9cea-259f5aba0eba&response_type=code&redirect_uri=https%3A%2F%2Fflow.manywho.com%2Fapi%2Frun%2F1%2Foauth2&nonce=1234&resource=00000002-0000-0000-c000-000000000000&prompt=admin_consent 
 
-The response will be:
+To authorize Boomi Flow app for all the organization the admin should give permissions following this link:
 
-Error must be null or whitespace
-Parameter name: Error
+https://login.microsoftonline.com/common/oauth2/authorize?client_id={clientId}&response_type=code&redirect_uri={redirect-uri}%2Fauthorization&nonce={random-nonce}&resource=00000002-0000-0000-c000-000000000000&prompt=admin_consent
+
+> The `redirect_uri` parameter should be URL-encoded, like `https%3A%2F%2Fservices.manywho.com%2Fapi%2Fazure%2F1%2Fadmin`
 
 #### Running
 
