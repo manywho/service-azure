@@ -1,6 +1,7 @@
 package com.manywho.services.azure.services;
 
 import com.auth0.jwt.JWT;
+import com.google.common.base.Strings;
 import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
 import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthenticationStatus;
@@ -41,7 +42,16 @@ public class AuthenticationService {
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
         authenticatedWhoResult.setDirectoryId( provider.getClientId());
         authenticatedWhoResult.setDirectoryName( provider.getName());
-        authenticatedWhoResult.setEmail(azureUser.getEmail());
+
+        // the engine needs a user with email populated, if the user doesn't have email we use the unique name that is
+        // always mandatory in Azure
+
+        if (Strings.isNullOrEmpty(azureUser.getEmail())) {
+            authenticatedWhoResult.setEmail(azureUser.getUniqueName());
+        } else {
+            authenticatedWhoResult.setEmail(azureUser.getEmail());
+        }
+
         authenticatedWhoResult.setFirstName(azureUser.getGivenName());
         authenticatedWhoResult.setIdentityProvider(provider.getName());
         authenticatedWhoResult.setLastName(azureUser.getFamilyName());
