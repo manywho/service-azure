@@ -1,10 +1,7 @@
 ManyWho Azure Service
 =====================
 
-> This service is currently in development, and not yet recommended for use in production environments
-
 This service allows you to integrate your Flows with Azure Id Provider
-
 
 before running the app for first time the admin need to consent permissions executing this url in the browser:
 
