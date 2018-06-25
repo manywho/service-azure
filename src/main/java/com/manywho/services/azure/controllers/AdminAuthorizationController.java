@@ -20,7 +20,7 @@ public class AdminAuthorizationController {
 
         String body = "<h1>Authorization Success</h1>" +
                 "<p>The client has been approved to be used in your organization.</p>" +
-                "<p>You can now install the SharePoint Service. For more information please check " +
+                "<p>You can now install the Azure Service. For more information please check " +
                 "<a href=\"https://docs.manywho.com\">docs.manywho.com</a></p>";
         if (Strings.isNullOrEmpty(code) || Boolean.valueOf(adminConsent) != true) {
             title = "There was a problem ";
