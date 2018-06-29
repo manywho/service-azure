@@ -3,10 +3,10 @@ ManyWho Azure Service
 
 This service allows you to integrate your Flows with Azure Id Provider
 
-Before running the app for first time the admin need to consent permissions executing this url in the browser:
+Before running the app for first time the admin need to consent permissions executing this URL in the browser:
 
 
-To authorize Boomi Flow app for all the organization the admin should give permissions following this link:
+TTo authorize the Boomi Flow app for the whole organization the admin should give permissions following this link:
 
 https://login.microsoftonline.com/common/oauth2/authorize?client_id={clientId}&response_type=code&redirect_uri={redirect-uri}%2Fauthorization&nonce={random-nonce}&resource=00000002-0000-0000-c000-000000000000&prompt=admin_consent
 
