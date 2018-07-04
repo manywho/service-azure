@@ -7,6 +7,7 @@ import com.manywho.sdk.entities.security.AuthenticationCredentials;
 import com.manywho.sdk.enums.AuthenticationStatus;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.azure.configuration.SecurityConfiguration;
+import com.manywho.services.azure.controllers.Compressor;
 import com.manywho.services.azure.entities.AzureUser;
 import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.oauth.AuthResponse;
@@ -15,6 +16,7 @@ import com.manywho.services.azure.oauth.AzureProvider;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import java.io.IOException;
 
 public class AuthenticationService {
     public final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
@@ -57,7 +59,13 @@ public class AuthenticationService {
         authenticatedWhoResult.setLastName(azureUser.getFamilyName());
         authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(provider.getClientId());
-        authenticatedWhoResult.setToken( jwt.getToken());
+
+        try {
+            authenticatedWhoResult.setToken(Compressor.compress(jwt.getToken()));
+        } catch (IOException e) {
+            throw new RuntimeException("Error compressing token", e);
+        }
+
         authenticatedWhoResult.setUserId( azureUser.getUserId());
         authenticatedWhoResult.setUsername(azureUser.getUniqueName());
 

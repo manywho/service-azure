@@ -9,12 +9,14 @@ import com.manywho.sdk.entities.run.elements.type.Property;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.services.azure.configuration.SecurityConfiguration;
+import com.manywho.services.azure.controllers.Compressor;
 import com.manywho.services.azure.entities.Configuration;
 import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.oauth.AuthResponse;
 import com.manywho.services.azure.oauth.AzureHttpClient;
 import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -44,7 +46,7 @@ public class AuthorizationService {
                 }
             case Specified:
                 if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    String userId = azureFacade.fetchCurrentUserId(user.getToken());
+                    String userId = azureFacade.fetchCurrentUserId(getDecompressedToken(user));
 
                     if (CollectionUtils.isNotEmpty(authorization.getUsers())) {
                         for (User allowedUser:authorization.getUsers()) {
@@ -57,7 +59,7 @@ public class AuthorizationService {
                     }
 
                     if (CollectionUtils.isNotEmpty(authorization.getGroups())) {
-                        List<Object> groups = azureFacade.fetchMemberOfGroups(user.getToken());
+                        List<Object> groups = azureFacade.fetchMemberOfGroups(getDecompressedToken(user));
                         for (Group group : authorization.getGroups()) {
                             if (groups.stream().anyMatch(m -> m.getExternalId().equals(group.getAuthenticationId()))) {
                                 return "200";
@@ -67,6 +69,14 @@ public class AuthorizationService {
                 }
             default:
                 return "401";
+        }
+    }
+
+    private String getDecompressedToken(AuthenticatedWho user) {
+        try {
+            return Compressor.decompress(user.getToken());
+        } catch (IOException e) {
+            throw new RuntimeException("Not valid token", e);
         }
     }
 
