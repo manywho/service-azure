@@ -40,18 +40,16 @@ public class AuthenticationService {
         JWT jwt = JWT.decode(authResponse.getAccess_token());
         AzureUser azureUser = azureFacade.fetchCurrentUser(jwt.getToken());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
-        authenticatedWhoResult.setDirectoryId( provider.getClientId());
-        authenticatedWhoResult.setDirectoryName( provider.getName());
 
-        // the engine needs a user with email populated, if the user doesn't have email we use the unique name that is
-        // always mandatory in Azure
-
-        if (Strings.isNullOrEmpty(azureUser.getEmail())) {
-            authenticatedWhoResult.setEmail(azureUser.getUniqueName());
-        } else {
-            authenticatedWhoResult.setEmail(azureUser.getEmail());
+        if (Strings.isNullOrEmpty(azureUser.getEmail()) == true) {
+            authenticatedWhoResult = AuthenticatedWhoResult.createDeniedResult();
+            authenticatedWhoResult.setStatusMessage("This account doesn't have an email address - please provide an email in your account and try again.");
+            return authenticatedWhoResult;
         }
 
+        authenticatedWhoResult.setDirectoryId( provider.getClientId());
+        authenticatedWhoResult.setDirectoryName( provider.getName());
+        authenticatedWhoResult.setEmail(azureUser.getEmail());
         authenticatedWhoResult.setFirstName(azureUser.getGivenName());
         authenticatedWhoResult.setIdentityProvider(provider.getName());
         authenticatedWhoResult.setLastName(azureUser.getFamilyName());
