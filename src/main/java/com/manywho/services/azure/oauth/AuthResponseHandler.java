@@ -25,6 +25,11 @@ public class AuthResponseHandler implements ResponseHandler {
             }
         }
 
+        if (status == 400) {
+            String error = EntityUtils.toString(httpResponse.getEntity());
+            throw new RuntimeException(error);
+        }
+
         throw new RuntimeException(httpResponse.getStatusLine().toString());
     }
 }
