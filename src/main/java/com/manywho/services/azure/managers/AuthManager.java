@@ -48,7 +48,7 @@ public class AuthManager {
     public ObjectDataResponse loadGroups(ObjectDataRequest objectDataRequest) throws Exception {
         Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
 
-        if (Strings.isNullOrEmpty(configuration.getUsername()) == true || Strings.isNullOrEmpty(configuration.getPassword()) == true) {
+        if (Strings.isNullOrEmpty(configuration.getUsername()) || Strings.isNullOrEmpty(configuration.getPassword())) {
             throw new RuntimeException("Username and Password are required to load groups");
         }
 
@@ -62,7 +62,7 @@ public class AuthManager {
     public ObjectDataResponse loadUsers(ObjectDataRequest objectDataRequest) throws Exception {
         Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
 
-        if (Strings.isNullOrEmpty(configuration.getUsername()) == true || Strings.isNullOrEmpty(configuration.getPassword()) == true) {
+        if (Strings.isNullOrEmpty(configuration.getUsername()) || Strings.isNullOrEmpty(configuration.getPassword())) {
             throw new RuntimeException("Username and Password are required to load users");
         }
 

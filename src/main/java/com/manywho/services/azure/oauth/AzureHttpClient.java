@@ -15,9 +15,11 @@ import java.util.List;
 
 public class AzureHttpClient {
     private CloseableHttpClient httpclient;
+    private AuthResponseHandler authResponseHandler;
 
     @Inject
-    public AzureHttpClient(){
+    public AzureHttpClient(AuthResponseHandler authResponseHandler){
+        this.authResponseHandler = authResponseHandler;
         this.httpclient = HttpClients.createDefault();
     }
 
@@ -38,7 +40,7 @@ public class AzureHttpClient {
             HttpPost httpPost = new HttpPost(String.format("%s/%s", AzureProvider.AUTHORITY_URI, "oauth2/token"));
             httpPost.setEntity(entity);
 
-            return (AuthResponse) httpclient.execute(httpPost, new AuthResponseHandler());
+            return (AuthResponse) httpclient.execute(httpPost, authResponseHandler);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -68,7 +70,7 @@ public class AzureHttpClient {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
             httpPost.setEntity(entity);
 
-            return (AuthResponse) httpclient.execute(httpPost, new AuthResponseHandler());
+            return (AuthResponse) httpclient.execute(httpPost, authResponseHandler);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

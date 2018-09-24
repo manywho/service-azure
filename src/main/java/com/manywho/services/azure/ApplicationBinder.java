@@ -4,6 +4,7 @@ import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.azure.configuration.SecurityConfiguration;
 import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.managers.*;
+import com.manywho.services.azure.oauth.AuthResponseHandler;
 import com.manywho.services.azure.oauth.AzureHttpClient;
 import com.manywho.services.azure.oauth.AzureProvider;
 import com.manywho.services.azure.services.*;
@@ -14,6 +15,7 @@ public class ApplicationBinder extends AbstractBinder {
     protected void configure() {
         bind(AzureProvider.class).to(AbstractOauth2Provider.class);
         bind(AzureHttpClient.class).to(AzureHttpClient.class);
+        bind(AuthResponseHandler.class).to(AuthResponseHandler.class);
         bind(AuthManager.class).to(AuthManager.class);
         bind(AuthenticationService.class).to(AuthenticationService.class);
         bind(AuthorizationService.class).to(AuthorizationService.class);
