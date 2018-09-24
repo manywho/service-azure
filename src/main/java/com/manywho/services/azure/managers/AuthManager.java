@@ -1,5 +1,6 @@
 package com.manywho.services.azure.managers;
 
+import com.google.common.base.Strings;
 import com.manywho.sdk.entities.UserObject;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
@@ -47,6 +48,10 @@ public class AuthManager {
     public ObjectDataResponse loadGroups(ObjectDataRequest objectDataRequest) throws Exception {
         Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
 
+        if (Strings.isNullOrEmpty(configuration.getUsername()) == true || Strings.isNullOrEmpty(configuration.getPassword()) == true) {
+            throw new RuntimeException("Username and Password are required to load groups");
+        }
+
         return new ObjectDataResponse(authorizationService.loadGroups(configuration));
     }
 
@@ -56,6 +61,10 @@ public class AuthManager {
 
     public ObjectDataResponse loadUsers(ObjectDataRequest objectDataRequest) throws Exception {
         Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+
+        if (Strings.isNullOrEmpty(configuration.getUsername()) == true || Strings.isNullOrEmpty(configuration.getPassword()) == true) {
+            throw new RuntimeException("Username and Password are required to load users");
+        }
 
         return new ObjectDataResponse(authorizationService.loadUsers(configuration));
     }
