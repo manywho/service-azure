@@ -12,12 +12,10 @@ import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.oauth.AuthResponse;
 import com.manywho.services.azure.oauth.AzureHttpClient;
 import com.manywho.services.azure.oauth.AzureProvider;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 
 public class AuthenticationService {
-    public final static String RESOURCE_ID = "00000003-0000-0000-c000-000000000000";
     private SecurityConfiguration securityConfiguration;
     private AzureHttpClient azureHttpClient;
     private AzureFacade azureFacade;
@@ -34,8 +32,7 @@ public class AuthenticationService {
                 credentials.getCode(),
                 AzureProvider.REDIRECT_URI,
                 securityConfiguration.getOauth2ClientId(),
-                securityConfiguration.getOauth2ClientSecret(),
-                RESOURCE_ID);
+                securityConfiguration.getOauth2ClientSecret());
 
         JWT jwt = JWT.decode(authResponse.getAccess_token());
         AzureUser azureUser = azureFacade.fetchCurrentUser(jwt.getToken());

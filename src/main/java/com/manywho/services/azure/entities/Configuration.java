@@ -9,9 +9,16 @@ public class Configuration {
     @Property("Password")
     private String password;
 
+    @Property("Tenant")
+    private String tenant;
+
     public String getUsername() {return username;}
 
     public String getPassword() {
         return password;
+    }
+
+    public String getTenant() {
+        return tenant;
     }
 }

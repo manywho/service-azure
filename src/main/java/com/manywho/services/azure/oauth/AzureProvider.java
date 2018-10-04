@@ -9,7 +9,9 @@ import javax.inject.Inject;
 public class AzureProvider extends AbstractOauth2Provider {
     private final SecurityConfiguration configuration;
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
-    public static final String AUTHORITY_URI = "https://login.microsoftonline.com/common";
+    public static final String GRAPH_RESOURCE = "00000003-0000-0000-c000-000000000000";
+    public static final String AUTHORITY_URI_V1 = "https://login.microsoftonline.com/common";
+    public static final String AUTHORITY_URI_V2 = "https://login.microsoftonline.com";
 
     @Inject
     public AzureProvider(SecurityConfiguration configuration) {
@@ -45,6 +47,6 @@ public class AzureProvider extends AbstractOauth2Provider {
     public String getAuthorizationUrl(OAuthConfig config) {
 
         return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s",
-                AUTHORITY_URI, config.getApiKey(), "User.Read" , "code");
+                AUTHORITY_URI_V1, config.getApiKey(), "User.Read" , "code");
     }
 }

@@ -9,6 +9,11 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 public class AuthResponseHandler implements ResponseHandler {
+    private ObjectMapper objectMapper;
+
+    public AuthResponseHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public AuthResponse handleResponse(HttpResponse httpResponse) throws IOException {
@@ -19,9 +24,7 @@ public class AuthResponseHandler implements ResponseHandler {
             if (entity2 == null) {
                 throw new RuntimeException("Error when auth request");
             } else{
-                ObjectMapper mapper = new ObjectMapper();
-
-                return mapper.readValue(EntityUtils.toString(entity2), AuthResponse.class);
+                return objectMapper.readValue(EntityUtils.toString(entity2), AuthResponse.class);
             }
         }
 

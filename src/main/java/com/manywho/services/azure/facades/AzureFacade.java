@@ -31,7 +31,7 @@ public class AzureFacade {
         retrieveRequestFactory = client.getRetrieveRequestFactory();
     }
 
-    public List<Object> fetchGroups(String token) throws ExecutionException, InterruptedException {
+    public List<Object> fetchGroups(String token) {
         ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups");
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());

@@ -30,7 +30,7 @@ public class AuthManager {
         this.authorizationService = authorizationService;
     }
 
-    public AuthenticatedWhoResult authenticateUser(AbstractOauth2Provider provider, AuthenticationCredentials credentials) throws Exception {
+    public AuthenticatedWhoResult authenticateUser(AbstractOauth2Provider provider, AuthenticationCredentials credentials) {
 
         return authenticationService.getAuthenticatedWhoResult(provider, credentials);
     }

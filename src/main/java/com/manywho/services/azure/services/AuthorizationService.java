@@ -17,7 +17,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 public class AuthorizationService {
 
@@ -72,27 +71,25 @@ public class AuthorizationService {
 
     public ObjectCollection loadGroups(Configuration configuration) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
+                configuration.getTenant(),
                 configuration.getUsername(),
                 configuration.getPassword(),
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        try {
-             List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token());
-            ObjectCollection objectCollection = new ObjectCollection();
+        List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token());
+        ObjectCollection objectCollection = new ObjectCollection();
 
-            for (Object o: groups) {
-                objectCollection.add(o);
-            }
-
-            return objectCollection;
-        } catch (ExecutionException | InterruptedException e ) {
-            throw new RuntimeException(e);
+        for (Object o: groups) {
+            objectCollection.add(o);
         }
+
+        return objectCollection;
     }
 
     public ObjectCollection loadUsers(Configuration configuration) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
+                configuration.getTenant(),
                 configuration.getUsername(),
                 configuration.getPassword(),
                 this.securityConfiguration.getOauth2ClientId(),
