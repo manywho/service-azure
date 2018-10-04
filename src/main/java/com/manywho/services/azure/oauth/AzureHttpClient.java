@@ -9,6 +9,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import sun.net.www.protocol.http.AuthenticationHeader;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -21,11 +22,12 @@ import static com.manywho.services.azure.oauth.AzureProvider.GRAPH_RESOURCE;
 public class AzureHttpClient {
     private CloseableHttpClient httpclient;
     private ObjectMapper objectMapper;
-
+    private AuthResponseHandler authResponseHandler;
     @Inject
-    public AzureHttpClient(ObjectMapper objectMapper){
+    public AzureHttpClient(ObjectMapper objectMapper, AuthResponseHandler authResponseHandler){
         this.httpclient = HttpClients.createDefault();
         this.objectMapper = objectMapper;
+        this.authResponseHandler = authResponseHandler;
     }
 
     public AuthResponse getAccessTokenByUsernamePassword(String tenant, String userName, String password, String clientId,
@@ -54,7 +56,7 @@ public class AzureHttpClient {
 
             httpPost.setEntity(entity);
 
-            return (AuthResponse) httpclient.execute(httpPost, new AuthResponseHandler(objectMapper));
+            return (AuthResponse) httpclient.execute(httpPost, authResponseHandler);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -84,7 +86,7 @@ public class AzureHttpClient {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(formParams, Consts.UTF_8);
             httpPost.setEntity(entity);
 
-            return (AuthResponse) httpclient.execute(httpPost, new AuthResponseHandler(objectMapper));
+            return (AuthResponse) httpclient.execute(httpPost, authResponseHandler);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
