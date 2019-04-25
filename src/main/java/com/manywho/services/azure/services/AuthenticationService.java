@@ -28,13 +28,7 @@ public class AuthenticationService {
     }
 
     public AuthenticatedWhoResult getAuthenticatedWhoResult(AbstractOauth2Provider provider, AuthenticationCredentials credentials) {
-        AuthResponse authResponse = azureHttpClient.getAccessTokenByAuthCode(
-                credentials.getCode(),
-                AzureProvider.REDIRECT_URI,
-                securityConfiguration.getOauth2ClientId(),
-                securityConfiguration.getOauth2ClientSecret());
-
-        JWT jwt = JWT.decode(authResponse.getAccess_token());
+        JWT jwt = JWT.decode(credentials.getToken());
         AzureUser azureUser = azureFacade.fetchCurrentUser(jwt.getToken());
         AuthenticatedWhoResult authenticatedWhoResult = new AuthenticatedWhoResult();
 

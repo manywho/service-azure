@@ -5,6 +5,7 @@ import com.manywho.services.azure.configuration.SecurityConfiguration;
 import org.scribe.model.OAuthConfig;
 
 import javax.inject.Inject;
+import java.util.UUID;
 
 public class AzureProvider extends AbstractOauth2Provider {
     private final SecurityConfiguration configuration;
@@ -46,7 +47,7 @@ public class AzureProvider extends AbstractOauth2Provider {
     @Override
     public String getAuthorizationUrl(OAuthConfig config) {
 
-        return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s",
-                AUTHORITY_URI_V1, config.getApiKey(), "User.Read" , "code");
+        return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s&nonce=%s&response_mode=form_post",
+                AUTHORITY_URI_V1, config.getApiKey(), "openid email" , "code+id_token", UUID.randomUUID());
     }
 }
