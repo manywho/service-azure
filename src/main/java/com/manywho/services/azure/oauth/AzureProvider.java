@@ -48,6 +48,6 @@ public class AzureProvider extends AbstractOauth2Provider {
     public String getAuthorizationUrl(OAuthConfig config) {
 
         return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s&nonce=%s&response_mode=form_post",
-                AUTHORITY_URI_V1, config.getApiKey(), "openid email" , "code+id_token", UUID.randomUUID());
+                AUTHORITY_URI_V1, config.getApiKey(), "openid+profile+email" , "code+id_token", UUID.randomUUID());
     }
 }

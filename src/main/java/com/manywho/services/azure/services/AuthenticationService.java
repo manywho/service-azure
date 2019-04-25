@@ -38,17 +38,19 @@ public class AuthenticationService {
             return authenticatedWhoResult;
         }
 
+        // securityConfiguration.getOauth2ClientId() == ((JWTDecoder) jwt).payload.getAudience()
+
         authenticatedWhoResult.setDirectoryId( provider.getClientId());
         authenticatedWhoResult.setDirectoryName( provider.getName());
-        authenticatedWhoResult.setEmail(azureUser.getEmail());
-        authenticatedWhoResult.setFirstName(azureUser.getGivenName());
+        authenticatedWhoResult.setEmail(jwt.getClaims().get("email").asString());
+        authenticatedWhoResult.setFirstName(jwt.getClaims().get("given_name").asString());
         authenticatedWhoResult.setIdentityProvider(provider.getName());
-        authenticatedWhoResult.setLastName(azureUser.getFamilyName());
+        authenticatedWhoResult.setLastName(jwt.getClaims().get("family_name").asString());
         authenticatedWhoResult.setStatus(AuthenticationStatus.Authenticated);
         authenticatedWhoResult.setTenantName(provider.getClientId());
-        authenticatedWhoResult.setToken( jwt.getToken());
-        authenticatedWhoResult.setUserId( azureUser.getUserId());
-        authenticatedWhoResult.setUsername(azureUser.getUniqueName());
+        authenticatedWhoResult.setToken(jwt.getToken());
+        authenticatedWhoResult.setUserId(jwt.getClaims().get("email").asString());
+        authenticatedWhoResult.setUsername(jwt.getClaims().get("unique_name").asString());
 
         return authenticatedWhoResult;
     }
