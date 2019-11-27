@@ -2,6 +2,7 @@ package com.manywho.services.azure;
 
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.azure.configuration.SecurityConfiguration;
+import com.manywho.services.azure.facades.AzureEntityFetcher;
 import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.managers.*;
 import com.manywho.services.azure.oauth.AuthResponseHandler;
@@ -22,5 +23,6 @@ public class ApplicationBinder extends AbstractBinder {
         bind(SecurityConfiguration.class).to(SecurityConfiguration.class);
         bind(ObjectMapperService.class).to(ObjectMapperService.class);
         bind(AzureFacade.class).to(AzureFacade.class);
+        bind(AzureEntityFetcher.class).to(AzureEntityFetcher.class);
     }
 }
