@@ -69,7 +69,7 @@ public class AuthorizationService {
         }
     }
 
-    public ObjectCollection loadGroups(Configuration configuration) {
+    public ObjectCollection loadGroups(Configuration configuration, List<String> ids) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
                 configuration.getTenant(),
                 configuration.getUsername(),
@@ -77,7 +77,7 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token());
+        List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token(), ids);
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (Object o: groups) {
@@ -87,7 +87,7 @@ public class AuthorizationService {
         return objectCollection;
     }
 
-    public ObjectCollection loadUsers(Configuration configuration) {
+    public ObjectCollection loadUsers(Configuration configuration, List<String> ids) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
                 configuration.getTenant(),
                 configuration.getUsername(),
@@ -95,7 +95,7 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token());
+        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token(), ids);
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (Object o: users) {

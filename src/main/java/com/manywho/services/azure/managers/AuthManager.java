@@ -11,9 +11,12 @@ import com.manywho.sdk.enums.AuthorizationType;
 import com.manywho.sdk.services.PropertyCollectionParser;
 import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
 import com.manywho.services.azure.entities.Configuration;
+import com.manywho.services.azure.facades.ObjectDataRequestExtractor;
 import com.manywho.services.azure.services.AuthenticationService;
 import com.manywho.services.azure.services.AuthorizationService;
 import org.scribe.oauth.OAuthService;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -52,7 +55,9 @@ public class AuthManager {
             throw new RuntimeException("Username and Password are required to load groups");
         }
 
-        return new ObjectDataResponse(authorizationService.loadGroups(configuration));
+        List<String> groupIds = ObjectDataRequestExtractor.getObjectProperties(objectDataRequest, "GroupAuthorizationGroup", "AuthenticationId");
+
+        return new ObjectDataResponse(authorizationService.loadGroups(configuration, groupIds));
     }
 
     public ObjectDataResponse loadGroupAttributes() {
@@ -66,7 +71,9 @@ public class AuthManager {
             throw new RuntimeException("Username and Password are required to load users");
         }
 
-        return new ObjectDataResponse(authorizationService.loadUsers(configuration));
+        List<String> userIds = ObjectDataRequestExtractor.getObjectProperties(objectDataRequest, "GroupAuthorizationUser", "AuthenticationId");
+
+        return new ObjectDataResponse(authorizationService.loadUsers(configuration, userIds));
     }
 
     public ObjectDataResponse loadUsersAttributes() {

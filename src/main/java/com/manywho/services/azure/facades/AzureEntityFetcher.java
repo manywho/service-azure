@@ -9,6 +9,7 @@ import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRe
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.v4.RetrieveRequestFactory;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
+import org.apache.olingo.client.api.uri.v4.URIBuilder;
 import org.apache.olingo.client.api.v4.ODataClient;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
@@ -26,14 +27,14 @@ public class AzureEntityFetcher {
 
     public ODataEntity fetchEntity(String token, String entryPoint){
         
-        ODataEntityRequest<ODataEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(buildUriForEntryPoint(entryPoint));
+        ODataEntityRequest<ODataEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(buildUri(entryPoint, ""));
         addAuthHeader(entitySetRequest, token);
         
         return entitySetRequest.execute().getBody();
     }
 
-    public List<ODataEntity> fetchEntities(String token, String entryPoint){
-        return fetchEntitiesFollowPaging(token, buildUriForEntryPoint(entryPoint));
+    public List<ODataEntity> fetchEntities(String token, String entryPoint, String filter){
+        return fetchEntitiesFollowPaging(token, buildUri(entryPoint, filter));
     }
 
     private List<ODataEntity> fetchEntitiesFollowPaging(String token, URI uri){   
@@ -58,7 +59,16 @@ public class AzureEntityFetcher {
         request.addCustomHeader("Authorization", String.format("Bearer %s", token));
     }
 
-    private URI buildUriForEntryPoint(String entryPoint){
-        return client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).build();    
+    private URI buildUri(String entryPoint, String filter){
+        
+        URIBuilder builder = client.newURIBuilder(GRAPH_ENDPOINT);
+        
+        builder.appendEntitySetSegment(entryPoint);
+
+        if(filter != null && !filter.isEmpty()){
+            builder.addQueryOption("filter", filter, false);
+        }
+        
+        return builder.build();    
     }
 }
