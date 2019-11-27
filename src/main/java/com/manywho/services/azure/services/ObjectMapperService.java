@@ -1,13 +1,38 @@
 package com.manywho.services.azure.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.manywho.sdk.entities.run.elements.type.Object;
 import com.manywho.sdk.entities.run.elements.type.Property;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
+import com.manywho.services.azure.entities.AzureUser;
+
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
 
 public class ObjectMapperService {
 
-    public Object buildGroupObject(ODataEntity groupEntity) {
+    public List<Object> buildGroupsObjects(List<ODataEntity> groups) {
+        List<Object> groupsArray = new ArrayList<>();
+
+        for (ODataEntity siteEntity : groups) {
+            groupsArray.add(buildGroupObject(siteEntity));
+        }
+
+        return groupsArray;
+    }
+
+    public List<Object> buildUserObjects(List<ODataEntity> entities) {
+        List<Object> groupsArray = new ArrayList<>();
+
+        for (ODataEntity siteEntity : entities) {
+            groupsArray.add(buildUserObject(siteEntity));
+        }
+
+        return groupsArray;
+    }
+    
+    private Object buildGroupObject(ODataEntity groupEntity) {
         PropertyCollection properties = new PropertyCollection();
 
         properties.add(new Property("AuthenticationId", groupEntity.getProperty("id").getValue().toString()));
@@ -22,7 +47,7 @@ public class ObjectMapperService {
         return object;
     }
 
-    public Object buildUserObject(ODataEntity userEntity) {
+    private Object buildUserObject(ODataEntity userEntity) {
         PropertyCollection properties = new PropertyCollection();
 
         properties.add(new Property("AuthenticationId",  userEntity.getProperty("id").getValue().toString()));
@@ -35,5 +60,15 @@ public class ObjectMapperService {
         object.setProperties(properties);
 
         return object;
+    }
+
+    public AzureUser buildAzureUser(ODataEntity userEntity) {
+
+        return new AzureUser(userEntity.getProperty("mail").getValue().toString(),
+                userEntity.getProperty("givenName").getValue().toString(),
+                userEntity.getProperty("surname").getValue().toString(),
+                userEntity.getProperty("id").getValue().toString(),
+                userEntity.getProperty("userPrincipalName").getValue().toString()
+        );
     }
 }

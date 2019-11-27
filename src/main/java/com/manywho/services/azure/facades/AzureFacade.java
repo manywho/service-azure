@@ -1,102 +1,46 @@
 package com.manywho.services.azure.facades;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
 import com.manywho.sdk.entities.run.elements.type.Object;
 import com.manywho.services.azure.entities.AzureUser;
 import com.manywho.services.azure.services.ObjectMapperService;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.v4.RetrieveRequestFactory;
-import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.v4.ODataClient;
-import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.domain.v4.ODataEntity;
-import org.apache.olingo.commons.api.domain.v4.ODataEntitySet;
 
-import javax.inject.Inject;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import org.apache.olingo.commons.api.domain.v4.ODataEntity;
 
 public class AzureFacade {
-    private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0";
     private ObjectMapperService objectMapperService;
-    private final ODataClient client;
-    private final RetrieveRequestFactory retrieveRequestFactory;
+    private AzureEntityFetcher azureEntityStore;
 
     @Inject
-    public AzureFacade(ObjectMapperService objectMapperService) {
+    public AzureFacade(ObjectMapperService objectMapperService, AzureEntityFetcher azureEntityStore) {
         this.objectMapperService = objectMapperService;
-        client = ODataClientFactory.getV4();
-        retrieveRequestFactory = client.getRetrieveRequestFactory();
+        this.azureEntityStore = azureEntityStore;
     }
 
     public List<Object> fetchGroups(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups");
-
-        return responseGroups(sitesEntitySetResponse.getBody().getEntities());
+        List<ODataEntity> entities = this.azureEntityStore.fetchEntities(token, "groups");
+        
+        return this.objectMapperService.buildGroupsObjects(entities);
     }
-    public List<Object> fetchMemberOfGroups(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "me/memberOf");
 
-        return responseGroups(sitesEntitySetResponse.getBody().getEntities());
+    public List<Object> fetchMemberOfGroups(String token) {
+        List<ODataEntity> entities = this.azureEntityStore.fetchEntities(token, "me/memberOf");
+
+        return this.objectMapperService.buildGroupsObjects(entities);
     }
 
     public List<Object> fetchUsers(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users");
+        List<ODataEntity> entities = this.azureEntityStore.fetchEntities(token, "users");
 
-        return responseUsers(sitesEntitySetResponse.getBody().getEntities());
-    }
-
-    public String fetchCurrentUserId(String token) {
-        ODataEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
-
-        return sitesEntitySetResponse.getProperty("id").getValue().toString();
+        return this.objectMapperService.buildUserObjects(entities);
     }
 
     public AzureUser fetchCurrentUser(String token) {
-        ODataEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
+        ODataEntity sitesEntitySetResponse = this.azureEntityStore.fetchEntity(token, "me");
 
-        return new AzureUser(sitesEntitySetResponse.getProperty("mail").getValue().toString(),
-                sitesEntitySetResponse.getProperty("givenName").getValue().toString(),
-                sitesEntitySetResponse.getProperty("surname").getValue().toString(),
-                sitesEntitySetResponse.getProperty("id").getValue().toString(),
-                sitesEntitySetResponse.getProperty("userPrincipalName").getValue().toString()
-        );
-    }
-
-    private List<Object> responseUsers(List<ODataEntity> entities) {
-        List<Object> groupsArray = new ArrayList<>();
-
-        for (ODataEntity siteEntity : entities) {
-            groupsArray.add(this.objectMapperService.buildUserObject(siteEntity));
-        }
-
-        return groupsArray;
-    }
-
-    private ODataRetrieveResponse<ODataEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(urlEntity).build();
-        ODataEntitySetRequest<ODataEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
-        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
-
-        return entitySetRequest.execute();
-    }
-
-    private ODataRetrieveResponse<ODataEntity> getEntitySetResponse(String token, String entryPoint) {
-        URI entityUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).build();
-        ODataEntityRequest<ODataEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(entityUri);
-        entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
-        return entitySetRequest.execute();
-    }
-
-    private List<Object> responseGroups(List<ODataEntity> groups) {
-        List<Object> groupsArray = new ArrayList<>();
-
-        for (ODataEntity siteEntity : groups) {
-            groupsArray.add(this.objectMapperService.buildGroupObject(siteEntity));
-        }
-
-        return groupsArray;
+        return this.objectMapperService.buildAzureUser(sitesEntitySetResponse);
     }
 }

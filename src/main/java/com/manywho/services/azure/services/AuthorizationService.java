@@ -43,7 +43,7 @@ public class AuthorizationService {
                 }
             case Specified:
                 if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    String userId = azureFacade.fetchCurrentUserId(user.getToken());
+                    String userId = azureFacade.fetchCurrentUser(user.getToken()).userId;
 
                     if (CollectionUtils.isNotEmpty(authorization.getUsers())) {
                         for (User allowedUser:authorization.getUsers()) {
