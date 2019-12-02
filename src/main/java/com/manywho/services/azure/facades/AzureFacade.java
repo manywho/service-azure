@@ -20,8 +20,9 @@ public class AzureFacade {
         this.azureEntityStore = azureEntityStore;
     }
 
-    public List<Object> fetchGroups(String token, List<String> ids) {
-        String filter = AzureFilterBuilder.buildIdInFilter(ids);
+    public List<Object> fetchGroups(String token, List<String> ids, String searchTerm) {
+        String filter = AzureFilterBuilder.buildFilterExpression(ids, searchTerm);
+
         List<ODataEntity> entities = this.azureEntityStore.fetchEntities(token, "groups", filter);
         
         return this.objectMapperService.buildGroupsObjects(entities);
@@ -33,8 +34,8 @@ public class AzureFacade {
         return this.objectMapperService.buildGroupsObjects(entities);
     }
 
-    public List<Object> fetchUsers(String token, List<String> ids) {
-        String filter = AzureFilterBuilder.buildIdInFilter(ids);
+    public List<Object> fetchUsers(String token, List<String> ids, String searchTerm) {
+        String filter = AzureFilterBuilder.buildFilterExpression(ids, searchTerm);
         List<ODataEntity> entities = this.azureEntityStore.fetchEntities(token, "users", filter);
 
         return this.objectMapperService.buildUserObjects(entities);

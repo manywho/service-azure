@@ -56,8 +56,9 @@ public class AuthManager {
         }
 
         List<String> groupIds = ObjectDataRequestExtractor.getObjectProperties(objectDataRequest, "GroupAuthorizationGroup", "AuthenticationId");
+        String searchTerm = objectDataRequest.getListFilter().getSearch();
 
-        return new ObjectDataResponse(authorizationService.loadGroups(configuration, groupIds));
+        return new ObjectDataResponse(authorizationService.loadGroups(configuration, groupIds, searchTerm));
     }
 
     public ObjectDataResponse loadGroupAttributes() {
@@ -72,8 +73,9 @@ public class AuthManager {
         }
 
         List<String> userIds = ObjectDataRequestExtractor.getObjectProperties(objectDataRequest, "GroupAuthorizationUser", "AuthenticationId");
+        String searchTerm = objectDataRequest.getListFilter().getSearch();
 
-        return new ObjectDataResponse(authorizationService.loadUsers(configuration, userIds));
+        return new ObjectDataResponse(authorizationService.loadUsers(configuration, userIds, searchTerm));
     }
 
     public ObjectDataResponse loadUsersAttributes() {
