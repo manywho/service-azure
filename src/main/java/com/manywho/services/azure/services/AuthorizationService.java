@@ -17,7 +17,6 @@ import com.manywho.services.azure.oauth.AzureHttpClient;
 import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class AuthorizationService {
@@ -79,7 +78,7 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        String searchTerm = objectDataRequest.getListFilter().getSearch() != null ? objectDataRequest.getListFilter().getSearch() : "";
+        String searchTerm = objectDataRequest.getListFilter().getSearch();
         List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token(), searchTerm);
         ObjectCollection objectCollection = new ObjectCollection();
 
@@ -90,7 +89,7 @@ public class AuthorizationService {
         return objectCollection;
     }
 
-    public ObjectCollection loadUsers(Configuration configuration) {
+    public ObjectCollection loadUsers(Configuration configuration, ObjectDataRequest objectDataRequest) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
                 configuration.getTenant(),
                 configuration.getUsername(),
@@ -98,7 +97,8 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token());
+        String searchTerm = objectDataRequest.getListFilter().getSearch();
+        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token(), searchTerm);
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (Object o: users) {

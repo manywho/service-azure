@@ -33,8 +33,7 @@ public class AzureFacade {
     }
 
     public List<Object> fetchGroups(String token, String searchTerm) {
-
-        String filter = !searchTerm.isEmpty() ? AzureFilterBuilder.buildFilterExpression(searchTerm) : "";
+        String filter = AzureFilterBuilder.buildFilterExpression(searchTerm);
         ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups", filter);
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
@@ -45,8 +44,9 @@ public class AzureFacade {
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
 
-    public List<Object> fetchUsers(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users", "");
+    public List<Object> fetchUsers(String token, String searchTerm) {
+        String filter = AzureFilterBuilder.buildFilterExpression(searchTerm);
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users", filter);
 
         return responseUsers(sitesEntitySetResponse.getBody().getEntities());
     }

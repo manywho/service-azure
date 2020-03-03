@@ -66,7 +66,7 @@ public class AuthManager {
             throw new RuntimeException("Username and Password are required to load users");
         }
 
-        return new ObjectDataResponse(authorizationService.loadUsers(configuration));
+        return new ObjectDataResponse(authorizationService.loadUsers(configuration, objectDataRequest));
     }
 
     public ObjectDataResponse loadUsersAttributes() {
