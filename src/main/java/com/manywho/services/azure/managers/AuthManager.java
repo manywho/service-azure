@@ -52,7 +52,7 @@ public class AuthManager {
             throw new RuntimeException("Username and Password are required to load groups");
         }
 
-        return new ObjectDataResponse(authorizationService.loadGroups(configuration));
+        return new ObjectDataResponse(authorizationService.loadGroups(configuration, objectDataRequest));
     }
 
     public ObjectDataResponse loadGroupAttributes() {

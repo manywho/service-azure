@@ -8,6 +8,7 @@ import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySe
 import org.apache.olingo.client.api.communication.request.retrieve.v4.RetrieveRequestFactory;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
 import org.apache.olingo.client.api.v4.ODataClient;
+import org.apache.olingo.client.api.uri.v4.URIBuilder;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.commons.api.domain.v4.ODataEntity;
 import org.apache.olingo.commons.api.domain.v4.ODataEntitySet;
@@ -31,19 +32,21 @@ public class AzureFacade {
         retrieveRequestFactory = client.getRetrieveRequestFactory();
     }
 
-    public List<Object> fetchGroups(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups");
+    public List<Object> fetchGroups(String token, String searchTerm) {
+
+        String filter = !searchTerm.isEmpty() ? AzureFilterBuilder.buildFilterExpression(searchTerm) : "";
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups", filter);
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
     public List<Object> fetchMemberOfGroups(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "me/memberOf");
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "me/memberOf", "");
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
 
     public List<Object> fetchUsers(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users");
+        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users", "");
 
         return responseUsers(sitesEntitySetResponse.getBody().getEntities());
     }
@@ -75,8 +78,8 @@ public class AzureFacade {
         return groupsArray;
     }
 
-    private ODataRetrieveResponse<ODataEntitySet> getEntitiesSetResponse(String token, String urlEntity) {
-        URI entitySetURI = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(urlEntity).build();
+    private ODataRetrieveResponse<ODataEntitySet> getEntitiesSetResponse(String token, String urlEntity, String filter) {
+        URI entitySetURI = buildUri(urlEntity, filter);
         ODataEntitySetRequest<ODataEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
 
@@ -98,5 +101,18 @@ public class AzureFacade {
         }
 
         return groupsArray;
+    }
+
+    private URI buildUri(String entryPoint, String filter){
+
+        URIBuilder builder = client.newURIBuilder(GRAPH_ENDPOINT);
+
+        builder.appendEntitySetSegment(entryPoint);
+
+        if(filter != null && !filter.isEmpty()){
+            builder.addQueryOption("filter", filter, false);
+        }
+
+        return builder.build();
     }
 }
