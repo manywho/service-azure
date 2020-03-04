@@ -7,6 +7,7 @@ import com.manywho.sdk.entities.run.elements.type.Object;
 import com.manywho.sdk.entities.run.elements.type.ObjectCollection;
 import com.manywho.sdk.entities.run.elements.type.Property;
 import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
+import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.entities.security.AuthenticatedWho;
 import com.manywho.services.azure.configuration.SecurityConfiguration;
 import com.manywho.services.azure.entities.Configuration;
@@ -69,7 +70,7 @@ public class AuthorizationService {
         }
     }
 
-    public ObjectCollection loadGroups(Configuration configuration) {
+    public ObjectCollection loadGroups(Configuration configuration, ObjectDataRequest objectDataRequest) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
                 configuration.getTenant(),
                 configuration.getUsername(),
@@ -77,7 +78,8 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token());
+        String searchTerm = objectDataRequest.getListFilter().getSearch();
+        List<Object> groups = azureFacade.fetchGroups(accessToken.getAccess_token(), searchTerm);
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (Object o: groups) {
@@ -87,7 +89,7 @@ public class AuthorizationService {
         return objectCollection;
     }
 
-    public ObjectCollection loadUsers(Configuration configuration) {
+    public ObjectCollection loadUsers(Configuration configuration, ObjectDataRequest objectDataRequest) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
                 configuration.getTenant(),
                 configuration.getUsername(),
@@ -95,7 +97,8 @@ public class AuthorizationService {
                 this.securityConfiguration.getOauth2ClientId(),
                 this.securityConfiguration.getOauth2ClientSecret());
 
-        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token());
+        String searchTerm = objectDataRequest.getListFilter().getSearch();
+        List<Object> users = azureFacade.fetchUsers(accessToken.getAccess_token(), searchTerm);
         ObjectCollection objectCollection = new ObjectCollection();
 
         for (Object o: users) {
