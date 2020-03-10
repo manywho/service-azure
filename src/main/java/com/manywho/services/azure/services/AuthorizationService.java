@@ -72,7 +72,6 @@ public class AuthorizationService {
 
     public ObjectCollection loadGroups(Configuration configuration, ObjectDataRequest objectDataRequest) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
-                configuration.getTenant(),
                 configuration.getUsername(),
                 configuration.getPassword(),
                 this.securityConfiguration.getOauth2ClientId(),
@@ -91,7 +90,6 @@ public class AuthorizationService {
 
     public ObjectCollection loadUsers(Configuration configuration, ObjectDataRequest objectDataRequest) {
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
-                configuration.getTenant(),
                 configuration.getUsername(),
                 configuration.getPassword(),
                 this.securityConfiguration.getOauth2ClientId(),
