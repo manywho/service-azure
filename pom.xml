@@ -23,7 +23,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <manywho-sdk.version>1.25.0</manywho-sdk.version>
-        <odata.version>4.0.0-beta-02</odata.version>
+        <odata.version>4.7.1</odata.version>
     </properties>
 
     <dependencies>
