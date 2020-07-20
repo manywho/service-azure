@@ -113,6 +113,9 @@ public class AzureFacade {
             builder.addQueryOption("filter", filter, false);
         }
 
+        // Request the first 999 records which is the maximum allowed for Users and Groups, defaults to 100
+        builder.top(999);
+
         return builder.build();
     }
 }
