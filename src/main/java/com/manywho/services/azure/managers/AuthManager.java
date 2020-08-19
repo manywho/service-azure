@@ -1,75 +1,62 @@
 package com.manywho.services.azure.managers;
 
 import com.google.common.base.Strings;
-import com.manywho.sdk.entities.UserObject;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataRequest;
-import com.manywho.sdk.entities.run.elements.type.ObjectDataResponse;
-import com.manywho.sdk.entities.security.AuthenticatedWho;
-import com.manywho.sdk.entities.security.AuthenticatedWhoResult;
-import com.manywho.sdk.entities.security.AuthenticationCredentials;
-import com.manywho.sdk.enums.AuthorizationType;
-import com.manywho.sdk.services.PropertyCollectionParser;
-import com.manywho.sdk.services.oauth.AbstractOauth2Provider;
-import com.manywho.services.azure.entities.Configuration;
-import com.manywho.services.azure.services.AuthenticationService;
+import com.manywho.sdk.api.AuthorizationType;
+import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;
+import com.manywho.sdk.api.security.AuthenticatedWho;
+import com.manywho.sdk.services.configuration.ConfigurationParser;
+import com.manywho.sdk.services.types.system.$User;
+import com.manywho.sdk.services.types.system.AuthorizationGroup;
+import com.manywho.sdk.services.types.system.AuthorizationUser;
+import com.manywho.services.azure.ApplicationConfiguration;
+import com.manywho.services.azure.oauth.AzureConfiguration;
 import com.manywho.services.azure.services.AuthorizationService;
-import org.scribe.oauth.OAuthService;
 
 import javax.inject.Inject;
+import java.util.List;
 
 public class AuthManager {
-
-    private AuthenticationService authenticationService;
-    private AuthorizationService authorizationService;
-    private PropertyCollectionParser propertyParser;
+    private final AuthorizationService authorizationService;
+    private final ConfigurationParser configurationParser;
 
     @Inject
-    public AuthManager(AuthenticationService authenticationService, AuthorizationService authorizationService,
-                       PropertyCollectionParser propertyParser){
-        this.authenticationService = authenticationService;
-        this.propertyParser = propertyParser;
+    public AuthManager(AuthorizationService authorizationService,
+                       ConfigurationParser configurationParser){
         this.authorizationService = authorizationService;
+        this.configurationParser = configurationParser;
     }
 
-    public AuthenticatedWhoResult authenticateUser(AbstractOauth2Provider provider, AuthenticationCredentials credentials) {
-
-        return authenticationService.getAuthenticatedWhoResult(provider, credentials);
-    }
-
-    public ObjectDataResponse authorizeUser(OAuthService oauthService, AbstractOauth2Provider provider, AuthenticatedWho user, ObjectDataRequest objectDataRequest) {
+    public $User authorizeUser(AuthenticatedWho user, ObjectDataRequest objectDataRequest) throws Exception {
         String authorizationStatus = authorizationService.getUserAuthorizationStatus(objectDataRequest.getAuthorization(), user);
+        ApplicationConfiguration configuration = configurationParser.from(objectDataRequest);
 
-        UserObject userObject = new UserObject(provider.getName(), AuthorizationType.Oauth2,
-                oauthService.getAuthorizationUrl(null), authorizationStatus);
+        $User userObject = new $User();
+        userObject.setUserId(user.getUserId());
+        userObject.setDirectoryName(AzureConfiguration.DIRECTORY_NAME);
+        userObject.setDirectoryId(AzureConfiguration.DIRECTORY_NAME);
+        userObject.setAuthenticationType(AuthorizationType.Oauth2);
+        userObject.setLoginUrl(AzureConfiguration.getAuthorizationUrl(configuration.getTenant()));
+        userObject.setStatus(authorizationStatus);
 
-        return new ObjectDataResponse(userObject);
+        return userObject;
     }
 
-    public ObjectDataResponse loadGroups(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
-
+    public List<AuthorizationGroup> loadGroups(ObjectDataRequest objectDataRequest) throws Exception {
+        ApplicationConfiguration configuration = configurationParser.from(objectDataRequest);
         if (Strings.isNullOrEmpty(configuration.getUsername()) || Strings.isNullOrEmpty(configuration.getPassword())) {
             throw new RuntimeException("Username and Password are required to load groups");
         }
 
-        return new ObjectDataResponse(authorizationService.loadGroups(configuration, objectDataRequest));
+        return authorizationService.loadGroups(configuration, objectDataRequest);
     }
 
-    public ObjectDataResponse loadGroupAttributes() {
-        return new ObjectDataResponse(authorizationService.loadGroupAttributes());
-    }
-
-    public ObjectDataResponse loadUsers(ObjectDataRequest objectDataRequest) throws Exception {
-        Configuration configuration = propertyParser.parse(objectDataRequest.getConfigurationValues(), Configuration.class);
+    public List<AuthorizationUser> loadUsers(ObjectDataRequest objectDataRequest) throws Exception {
+        ApplicationConfiguration configuration = configurationParser.from(objectDataRequest);
 
         if (Strings.isNullOrEmpty(configuration.getUsername()) || Strings.isNullOrEmpty(configuration.getPassword())) {
             throw new RuntimeException("Username and Password are required to load users");
         }
 
-        return new ObjectDataResponse(authorizationService.loadUsers(configuration, objectDataRequest));
-    }
-
-    public ObjectDataResponse loadUsersAttributes() {
-        return new ObjectDataResponse(authorizationService.loadUsersAttributes());
+        return authorizationService.loadUsers(configuration, objectDataRequest);
     }
 }

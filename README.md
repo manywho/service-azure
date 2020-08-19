@@ -14,6 +14,8 @@ https://login.microsoftonline.com/common/oauth2/authorize?client_id={clientId}&r
 
 #### Running
 
+Configure the Azure oauth2 client credentials using the environment variables `oauth2.clientId` and `oauth2.clientSecret`.
+
 The service is a Jersey JAX-RS application, that by default is run under the Grizzly2 server on port 8080 (if you use 
 the packaged JAR).
 
