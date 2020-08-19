@@ -7,6 +7,7 @@ import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
 import com.manywho.sdk.services.utils.Environment;
 import com.manywho.services.azure.ApplicationConfiguration;
+import com.manywho.services.azure.ServiceConfiguration;
 import com.manywho.services.azure.entities.AzureUser;
 import com.manywho.services.azure.facades.AzureFacade;
 import com.manywho.services.azure.oauth.AuthResponse;
@@ -18,11 +19,13 @@ import javax.inject.Inject;
 public class AuthenticationService {
     private final AzureHttpClient azureHttpClient;
     private final AzureFacade azureFacade;
+    private final ServiceConfiguration serviceConfiguration;
 
     @Inject
-    public AuthenticationService(AzureHttpClient azureHttpClient, AzureFacade azureFacade) {
+    public AuthenticationService(AzureHttpClient azureHttpClient, AzureFacade azureFacade, ServiceConfiguration serviceConfiguration) {
         this.azureHttpClient = azureHttpClient;
         this.azureFacade = azureFacade;
+        this.serviceConfiguration = serviceConfiguration;
     }
 
     public AuthenticatedWhoResult getAuthenticatedWhoResult(ApplicationConfiguration applicationConfiguration, AuthenticationCredentials credentials) {
@@ -30,8 +33,8 @@ public class AuthenticationService {
                 applicationConfiguration.getTenant(),
                 credentials.getCode(),
                 AzureConfiguration.REDIRECT_URI,
-                Environment.getRequired("oauth2.clientId"),
-                Environment.getRequired("oauth2.clientSecret"));
+                serviceConfiguration.getClientId(),
+                serviceConfiguration.getClientSecret());
 
         DecodedJWT jwt = JWT.decode(authResponse.getAccess_token());
         AzureUser azureUser = azureFacade.fetchCurrentUser(jwt.getToken());
@@ -43,14 +46,14 @@ public class AuthenticationService {
             return authenticatedWhoResult;
         }
 
-        authenticatedWhoResult.setDirectoryId(Environment.getRequired("oauth2.clientId"));
+        authenticatedWhoResult.setDirectoryId(serviceConfiguration.getClientId());
         authenticatedWhoResult.setDirectoryName(AzureConfiguration.DIRECTORY_NAME);
         authenticatedWhoResult.setEmail(azureUser.getEmail());
         authenticatedWhoResult.setFirstName(azureUser.getGivenName());
         authenticatedWhoResult.setIdentityProvider(AzureConfiguration.DIRECTORY_NAME);
         authenticatedWhoResult.setLastName(azureUser.getFamilyName());
         authenticatedWhoResult.setStatus(AuthenticatedWhoResult.AuthenticationStatus.Authenticated);
-        authenticatedWhoResult.setTenantName(Environment.getRequired("oauth2.clientId"));
+        authenticatedWhoResult.setTenantName(serviceConfiguration.getClientId());
         authenticatedWhoResult.setToken(jwt.getToken());
         authenticatedWhoResult.setUserId(azureUser.getUserId());
         authenticatedWhoResult.setUsername(azureUser.getUniqueName());

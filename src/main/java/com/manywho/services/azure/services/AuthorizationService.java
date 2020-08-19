@@ -8,6 +8,7 @@ import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.sdk.services.types.system.AuthorizationGroup;
 import com.manywho.sdk.services.types.system.AuthorizationUser;
 import com.manywho.sdk.services.utils.Environment;
+import com.manywho.services.azure.ServiceConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
 import com.manywho.services.azure.ApplicationConfiguration;
 import com.manywho.services.azure.facades.AzureFacade;
@@ -20,11 +21,13 @@ import java.util.Objects;
 public class AuthorizationService {
     private final AzureHttpClient azureHttpClient;
     private final AzureFacade azureFacade;
+    private final ServiceConfiguration serviceConfiguration;
 
     @Inject
-    public AuthorizationService(AzureHttpClient azureHttpClient, AzureFacade azureFacade) {
+    public AuthorizationService(AzureHttpClient azureHttpClient, AzureFacade azureFacade, ServiceConfiguration serviceConfiguration) {
         this.azureHttpClient = azureHttpClient;
         this.azureFacade = azureFacade;
+        this.serviceConfiguration = serviceConfiguration;
     }
 
     public String getUserAuthorizationStatus(Authorization authorization, AuthenticatedWho user) throws Exception {
@@ -71,8 +74,8 @@ public class AuthorizationService {
                 configuration.getTenant(),
                 configuration.getUsername(),
                 configuration.getPassword(),
-                Environment.getRequired("oauth2.clientId"),
-                Environment.getRequired("oauth2.clientSecret"));
+                serviceConfiguration.getClientId(),
+                serviceConfiguration.getClientSecret());
 
         String searchTerm = objectDataRequest.getListFilter().getSearch();
 
@@ -84,8 +87,8 @@ public class AuthorizationService {
                 configuration.getTenant(),
                 configuration.getUsername(),
                 configuration.getPassword(),
-                Environment.getRequired("oauth2.clientId"),
-                Environment.getRequired("oauth2.clientSecret"));
+                serviceConfiguration.getClientId(),
+                serviceConfiguration.getClientSecret());
 
         String searchTerm = objectDataRequest.getListFilter().getSearch();
 

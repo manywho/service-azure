@@ -1,11 +1,21 @@
 package com.manywho.services.azure.oauth;
 
 import com.manywho.sdk.services.utils.Environment;
+import com.manywho.services.azure.ServiceConfiguration;
+
+import javax.inject.Inject;
 
 public class AzureConfiguration {
     public static final String REDIRECT_URI = "https://flow.manywho.com/api/run/1/oauth2";
     public static final String GRAPH_RESOURCE = "00000003-0000-0000-c000-000000000000";
     public static final String DIRECTORY_NAME = "azure-manywho";
+
+    private final ServiceConfiguration serviceConfiguration;
+
+    @Inject
+    AzureConfiguration(ServiceConfiguration serviceConfiguration) {
+        this.serviceConfiguration = serviceConfiguration;
+    }
 
     /**
      * If tenant is not empty returns the oauth2 entry point v1:
@@ -17,14 +27,14 @@ public class AzureConfiguration {
      * @param tenant tenant id or org domain
      * @return the entry point for initialize the oauth2 code flow
      */
-    public static String getAuthorizationUrl(String tenant) {
+    public String getAuthorizationUrl(String tenant) {
         String authorityUri = "https://login.microsoftonline.com/common";
 
         if (tenant != null && !tenant.equals("")) {
             authorityUri = String.format("https://login.microsoftonline.com/%s", tenant);
         }
         return String.format("%s/oauth2/authorize?client_id=%s&scope=%s&response_type=%s",
-                authorityUri, Environment.getRequired("oauth2.clientId"), "User.Read" , "code");
+                authorityUri, serviceConfiguration.getClientId(), "User.Read" , "code");
     }
 
     /**

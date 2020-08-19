@@ -9,6 +9,7 @@ import com.manywho.sdk.services.types.system.$User;
 import com.manywho.sdk.services.types.system.AuthorizationGroup;
 import com.manywho.sdk.services.types.system.AuthorizationUser;
 import com.manywho.services.azure.ApplicationConfiguration;
+import com.manywho.services.azure.ServiceConfiguration;
 import com.manywho.services.azure.oauth.AzureConfiguration;
 import com.manywho.services.azure.services.AuthorizationService;
 
@@ -18,12 +19,14 @@ import java.util.List;
 public class AuthManager {
     private final AuthorizationService authorizationService;
     private final ConfigurationParser configurationParser;
+    private final AzureConfiguration azureConfiguration;
 
     @Inject
-    public AuthManager(AuthorizationService authorizationService,
-                       ConfigurationParser configurationParser){
+    public AuthManager(AuthorizationService authorizationService, ConfigurationParser configurationParser,
+                       AzureConfiguration azureConfiguration){
         this.authorizationService = authorizationService;
         this.configurationParser = configurationParser;
+        this.azureConfiguration = azureConfiguration;
     }
 
     public $User authorizeUser(AuthenticatedWho user, ObjectDataRequest objectDataRequest) throws Exception {
@@ -35,7 +38,7 @@ public class AuthManager {
         userObject.setDirectoryName(AzureConfiguration.DIRECTORY_NAME);
         userObject.setDirectoryId(AzureConfiguration.DIRECTORY_NAME);
         userObject.setAuthenticationType(AuthorizationType.Oauth2);
-        userObject.setLoginUrl(AzureConfiguration.getAuthorizationUrl(configuration.getTenant()));
+        userObject.setLoginUrl(azureConfiguration.getAuthorizationUrl(configuration.getTenant()));
         userObject.setStatus(authorizationStatus);
 
         return userObject;
