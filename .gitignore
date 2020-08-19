@@ -49,3 +49,5 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 
 *.properties
+
+dependency-reduced-pom.xml
