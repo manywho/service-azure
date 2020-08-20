@@ -5,7 +5,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.base.Strings;
 import com.manywho.sdk.api.security.AuthenticatedWhoResult;
 import com.manywho.sdk.api.security.AuthenticationCredentials;
-import com.manywho.sdk.services.utils.Environment;
 import com.manywho.services.azure.ApplicationConfiguration;
 import com.manywho.services.azure.ServiceConfiguration;
 import com.manywho.services.azure.entities.AzureUser;
