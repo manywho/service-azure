@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class AuthResponseHandler implements ResponseHandler {
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Inject
     public AuthResponseHandler(ObjectMapper objectMapper) {

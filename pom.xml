@@ -18,25 +18,27 @@
             </snapshots>
         </repository>
     </repositories>
-
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <manywho-sdk.version>1.25.0</manywho-sdk.version>
-        <odata.version>4.0.0-beta-02</odata.version>
+        <version.manywho.sdk>2.0.1</version.manywho.sdk>
+        <odata.version>4.7.1</odata.version>
     </properties>
-
     <dependencies>
-
         <dependency>
             <groupId>com.manywho.sdk</groupId>
-            <artifactId>sdk-core</artifactId>
-            <version>1.25.0</version>
+            <artifactId>sdk-server-undertow</artifactId>
+            <version>${version.manywho.sdk}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.manywho.sdk</groupId>
+            <artifactId>sdk-server-servlet3</artifactId>
+            <version>${version.manywho.sdk}</version>
         </dependency>
         <dependency>
             <groupId>com.manywho.sdk</groupId>
             <artifactId>sdk-client</artifactId>
-            <version>1.25.0</version>
+            <version>${version.manywho.sdk}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -70,7 +72,26 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.olingo</groupId>
+            <artifactId>odata-client-api</artifactId>
+            <version>${odata.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.olingo</groupId>
+            <artifactId>odata-client-core</artifactId>
+            <version>${odata.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-apis</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
@@ -82,25 +103,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.olingo</groupId>
-            <artifactId>odata-client-api</artifactId>
-            <version>${odata.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.olingo</groupId>
-            <artifactId>odata-client-core</artifactId>
-            <version>${odata.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.scribejava</groupId>
-            <artifactId>scribejava-apis</artifactId>
-            <version>4.0.0</version>
-        </dependency>
-
         <!-- Java 11 compatibility -->
         <dependency>
             <groupId>javax.activation</groupId>

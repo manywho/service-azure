@@ -1,64 +1,63 @@
 package com.manywho.services.azure.facades;
 
-import com.manywho.sdk.entities.run.elements.type.Object;
+import com.manywho.sdk.services.types.system.AuthorizationGroup;
+import com.manywho.sdk.services.types.system.AuthorizationUser;
 import com.manywho.services.azure.entities.AzureUser;
 import com.manywho.services.azure.services.ObjectMapperService;
+import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntityRequest;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest;
-import org.apache.olingo.client.api.communication.request.retrieve.v4.RetrieveRequestFactory;
+import org.apache.olingo.client.api.communication.request.retrieve.RetrieveRequestFactory;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
-import org.apache.olingo.client.api.v4.ODataClient;
-import org.apache.olingo.client.api.uri.v4.URIBuilder;
+import org.apache.olingo.client.api.domain.ClientEntity;
+import org.apache.olingo.client.api.domain.ClientEntitySet;
+import org.apache.olingo.client.api.uri.URIBuilder;
 import org.apache.olingo.client.core.ODataClientFactory;
-import org.apache.olingo.commons.api.domain.v4.ODataEntity;
-import org.apache.olingo.commons.api.domain.v4.ODataEntitySet;
-
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class AzureFacade {
     private final static String GRAPH_ENDPOINT = "https://graph.microsoft.com/v1.0";
-    private ObjectMapperService objectMapperService;
+    private final ObjectMapperService objectMapperService;
     private final ODataClient client;
     private final RetrieveRequestFactory retrieveRequestFactory;
 
     @Inject
     public AzureFacade(ObjectMapperService objectMapperService) {
         this.objectMapperService = objectMapperService;
-        client = ODataClientFactory.getV4();
+        client = ODataClientFactory.getClient();
         retrieveRequestFactory = client.getRetrieveRequestFactory();
     }
 
-    public List<Object> fetchGroups(String token, String searchTerm) {
+    public List<AuthorizationGroup> fetchGroups(String token, String searchTerm) {
         String filter = AzureFilterBuilder.buildFilterExpression(searchTerm);
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups", filter);
+        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups", filter);
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
-    public List<Object> fetchMemberOfGroups(String token) {
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "me/memberOf", "");
+    public List<AuthorizationGroup> fetchMemberOfGroups(String token) {
+        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "me/memberOf", "");
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
 
-    public List<Object> fetchUsers(String token, String searchTerm) {
+    public List<AuthorizationUser> fetchUsers(String token, String searchTerm) {
         String filter = AzureFilterBuilder.buildFilterExpression(searchTerm);
-        ODataRetrieveResponse<ODataEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users", filter);
+        ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users", filter);
 
         return responseUsers(sitesEntitySetResponse.getBody().getEntities());
     }
 
     public String fetchCurrentUserId(String token) {
-        ODataEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
+        ClientEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
 
         return sitesEntitySetResponse.getProperty("id").getValue().toString();
     }
 
     public AzureUser fetchCurrentUser(String token) {
-        ODataEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
+        ClientEntity sitesEntitySetResponse = getEntitySetResponse(token, "me").getBody();
 
         return new AzureUser(sitesEntitySetResponse.getProperty("mail").getValue().toString(),
                 sitesEntitySetResponse.getProperty("givenName").getValue().toString(),
@@ -68,36 +67,36 @@ public class AzureFacade {
         );
     }
 
-    private List<Object> responseUsers(List<ODataEntity> entities) {
-        List<Object> groupsArray = new ArrayList<>();
+    private List<AuthorizationUser> responseUsers(List<ClientEntity> entities) {
+        List<AuthorizationUser> users = new ArrayList<>();
 
-        for (ODataEntity siteEntity : entities) {
-            groupsArray.add(this.objectMapperService.buildUserObject(siteEntity));
+        for (ClientEntity siteEntity : entities) {
+            users.add(this.objectMapperService.buildUserObject(siteEntity));
         }
 
-        return groupsArray;
+        return users;
     }
 
-    private ODataRetrieveResponse<ODataEntitySet> getEntitiesSetResponse(String token, String urlEntity, String filter) {
+    private ODataRetrieveResponse<ClientEntitySet> getEntitiesSetResponse(String token, String urlEntity, String filter) {
         URI entitySetURI = buildUri(urlEntity, filter);
-        ODataEntitySetRequest<ODataEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
+        ODataEntitySetRequest<ClientEntitySet> entitySetRequest = retrieveRequestFactory.getEntitySetRequest(entitySetURI);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
 
         return entitySetRequest.execute();
     }
 
-    private ODataRetrieveResponse<ODataEntity> getEntitySetResponse(String token, String entryPoint) {
+    private ODataRetrieveResponse<ClientEntity> getEntitySetResponse(String token, String entryPoint) {
         URI entityUri = client.newURIBuilder(GRAPH_ENDPOINT).appendEntitySetSegment(entryPoint).build();
-        ODataEntityRequest<ODataEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(entityUri);
+        ODataEntityRequest<ClientEntity> entitySetRequest = retrieveRequestFactory.getEntityRequest(entityUri);
         entitySetRequest.addCustomHeader("Authorization", String.format("Bearer %s", token));
         return entitySetRequest.execute();
     }
 
-    private List<Object> responseGroups(List<ODataEntity> groups) {
-        List<Object> groupsArray = new ArrayList<>();
+    private List<AuthorizationGroup> responseGroups(List<ClientEntity> groups) {
+        List<AuthorizationGroup> groupsArray = new ArrayList<>();
 
-        for (ODataEntity siteEntity : groups) {
-            groupsArray.add(this.objectMapperService.buildGroupObject(siteEntity));
+        for (ClientEntity groupEntity : groups) {
+            groupsArray.add(this.objectMapperService.buildGroupObject(groupEntity));
         }
 
         return groupsArray;

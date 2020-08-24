@@ -12,6 +12,17 @@ https://login.microsoftonline.com/common/oauth2/authorize?client_id={clientId}&r
 
 > The `redirect_uri` parameter should be URL-encoded, like `https%3A%2F%2Fservices.manywho.com%2Fapi%2Fazure%2F1%2Fcallback%2Fadmin%2Fauthorization`
 
+#### Building 
+
+To build the service, you will need to have Apache Ant, Maven 3 and Java 8.
+
+Configure the Azure oauth2 client credentials using the environment variables `oauth2.clientId` and `oauth2.clientSecret`.
+You can also generate a file service.property using Apache Ant:
+
+```bash
+$ ant generate-properties -Doauth2.clientId={client-id} -Doauth2.clientSecret={client-secret}
+```
+
 #### Running
 
 The service is a Jersey JAX-RS application, that by default is run under the Grizzly2 server on port 8080 (if you use 

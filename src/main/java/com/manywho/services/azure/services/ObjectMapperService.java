@@ -1,39 +1,22 @@
 package com.manywho.services.azure.services;
 
-import com.manywho.sdk.entities.run.elements.type.Object;
-import com.manywho.sdk.entities.run.elements.type.Property;
-import com.manywho.sdk.entities.run.elements.type.PropertyCollection;
-import org.apache.olingo.commons.api.domain.v4.ODataEntity;
+import com.manywho.sdk.services.types.system.AuthorizationGroup;
+import com.manywho.sdk.services.types.system.AuthorizationUser;
+import org.apache.olingo.client.api.domain.ClientEntity;
 
 public class ObjectMapperService {
 
-    public Object buildGroupObject(ODataEntity groupEntity) {
-        PropertyCollection properties = new PropertyCollection();
+    public AuthorizationGroup buildGroupObject(ClientEntity groupEntity) {
 
-        properties.add(new Property("AuthenticationId", groupEntity.getProperty("id").getValue().toString()));
-        properties.add(new Property("FriendlyName", groupEntity.getProperty("displayName").getValue().toString()));
-        properties.add(new Property("DeveloperSummary", groupEntity.getProperty("displayName").getValue().toString()));
-
-        Object object = new Object();
-        object.setDeveloperName("GroupAuthorizationGroup");
-        object.setExternalId(groupEntity.getProperty("id").getValue().toString());
-        object.setProperties(properties);
-
-        return object;
+        return new AuthorizationGroup(groupEntity.getProperty("id").getValue().toString(),
+                groupEntity.getProperty("displayName").getValue().toString(),
+                groupEntity.getProperty("displayName").getValue().toString());
     }
 
-    public Object buildUserObject(ODataEntity userEntity) {
-        PropertyCollection properties = new PropertyCollection();
+    public AuthorizationUser buildUserObject(ClientEntity userEntity) {
 
-        properties.add(new Property("AuthenticationId",  userEntity.getProperty("id").getValue().toString()));
-        properties.add(new Property("FriendlyName",  userEntity.getProperty("displayName").getValue().toString()));
-        properties.add(new Property("DeveloperSummary",  userEntity.getProperty("displayName").getValue().toString()));
-
-        Object object = new Object();
-        object.setDeveloperName("GroupAuthorizationUser");
-        object.setExternalId( userEntity.getProperty("id").getValue().toString());
-        object.setProperties(properties);
-
-        return object;
+        return new AuthorizationUser(userEntity.getProperty("id").getValue().toString(),
+                userEntity.getProperty("displayName").getValue().toString(),
+                userEntity.getProperty("displayName").getValue().toString());
     }
 }

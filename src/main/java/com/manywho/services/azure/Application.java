@@ -1,24 +1,22 @@
 package com.manywho.services.azure;
-
-import com.manywho.sdk.services.BaseApplication;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import com.manywho.sdk.services.servers.EmbeddedServer;
+import com.manywho.sdk.services.servers.Servlet3Server;
+import com.manywho.sdk.services.servers.undertow.UndertowServer;
 
 import javax.ws.rs.ApplicationPath;
 
 @ApplicationPath("/")
-public class Application extends BaseApplication {
-    static {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-    }
-
+public class Application extends Servlet3Server {
     public Application() {
-        registerSdk()
-                .packages("com.manywho.services.azure")
-                .register(new ApplicationBinder());
+        this.addModule(new ApplicationBinder());
+        this.setApplication(Application.class);
+        this.start();
     }
 
-    public static void main(String[] args) {
-        startServer(new Application());
+    public static void main(String[] args) throws Exception {
+        EmbeddedServer server = new UndertowServer();
+        server.addModule(new ApplicationBinder());
+        server.setApplication(Application.class);
+        server.start();
     }
 }
