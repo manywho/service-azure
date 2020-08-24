@@ -7,7 +7,6 @@ import com.manywho.sdk.api.run.elements.type.ObjectDataRequest;
 import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.sdk.services.types.system.AuthorizationGroup;
 import com.manywho.sdk.services.types.system.AuthorizationUser;
-import com.manywho.sdk.services.utils.Environment;
 import com.manywho.services.azure.ServiceConfiguration;
 import org.apache.commons.collections4.CollectionUtils;
 import com.manywho.services.azure.ApplicationConfiguration;
@@ -42,7 +41,7 @@ public class AuthorizationService {
                 }
             case Specified:
                 if (!user.getUserId().equalsIgnoreCase("PUBLIC_USER")) {
-                    String userId = azureFacade.fetchCurrentUserId(user.getToken());;
+                    String userId = azureFacade.fetchCurrentUserId(user.getToken());
 
                     if (CollectionUtils.isNotEmpty(authorization.getUsers())) {
                         for (User allowedUser:authorization.getUsers()) {
