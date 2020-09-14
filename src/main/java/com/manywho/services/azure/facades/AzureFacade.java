@@ -31,8 +31,7 @@ public class AzureFacade {
         retrieveRequestFactory = client.getRetrieveRequestFactory();
     }
 
-    public List<AuthorizationGroup> fetchGroups(String token, String searchTerm) {
-        String filter = AzureFilterBuilder.buildFilterExpression(searchTerm);
+    public List<AuthorizationGroup> fetchGroups(String token, String filter) {
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "groups", filter);
 
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
@@ -43,8 +42,7 @@ public class AzureFacade {
         return responseGroups(sitesEntitySetResponse.getBody().getEntities());
     }
 
-    public List<AuthorizationUser> fetchUsers(String token, String searchTerm) {
-        String filter = AzureFilterBuilder.buildFilterExpression(searchTerm);
+    public List<AuthorizationUser> fetchUsers(String token, String filter) {
         ODataRetrieveResponse<ClientEntitySet> sitesEntitySetResponse = getEntitiesSetResponse(token, "users", filter);
 
         return responseUsers(sitesEntitySetResponse.getBody().getEntities());
