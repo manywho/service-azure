@@ -8,6 +8,7 @@ import com.manywho.sdk.api.security.AuthenticatedWho;
 import com.manywho.sdk.services.types.system.AuthorizationGroup;
 import com.manywho.sdk.services.types.system.AuthorizationUser;
 import com.manywho.services.azure.ServiceConfiguration;
+import com.manywho.services.azure.facades.AzureFilterBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import com.manywho.services.azure.ApplicationConfiguration;
 import com.manywho.services.azure.facades.AzureFacade;
@@ -68,7 +69,6 @@ public class AuthorizationService {
     }
 
     public List<AuthorizationGroup> loadGroups(ApplicationConfiguration configuration, ObjectDataRequest objectDataRequest) {
-
         AuthResponse accessToken = azureHttpClient.getAccessTokenByUsernamePassword(
                 configuration.getTenant(),
                 configuration.getUsername(),
@@ -76,9 +76,8 @@ public class AuthorizationService {
                 serviceConfiguration.getClientId(),
                 serviceConfiguration.getClientSecret());
 
-        String searchTerm = objectDataRequest.getListFilter().getSearch();
-
-        return azureFacade.fetchGroups(accessToken.getAccess_token(), searchTerm);
+        return azureFacade.fetchGroups(accessToken.getAccess_token(),
+                AzureFilterBuilder.buildLoadGroupsFilterExpression(objectDataRequest));
     }
 
     public List<AuthorizationUser> loadUsers(ApplicationConfiguration configuration, ObjectDataRequest objectDataRequest) {
@@ -89,8 +88,7 @@ public class AuthorizationService {
                 serviceConfiguration.getClientId(),
                 serviceConfiguration.getClientSecret());
 
-        String searchTerm = objectDataRequest.getListFilter().getSearch();
-
-        return azureFacade.fetchUsers(accessToken.getAccess_token(), searchTerm);
+        return azureFacade.fetchUsers(accessToken.getAccess_token(),
+                AzureFilterBuilder.buildLoadUsersFilterExpression(objectDataRequest));
     }
 }
